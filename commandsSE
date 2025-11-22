@@ -1,0 +1,79 @@
+minikube start
+kubectl create deployment mynginx --image=nginx
+kubectl get deployment
+kubectl expose deployment mynginx --type=NodePort --port=80 --target-port=80
+kubectl create deployment mynginx --image=nginx
+kubectl get deployment
+kubectl get pods
+kubectl port-forward svc/mynginx 8081:80
+kubectl delete deployment mynginx
+kubectl delete service mynginx
+minikube stop
+
+Nagios:
+
+docker pull jasonrivers/nagios:latest
+docker run –name nagiosdemo -p 8888:80 jasonrivers/nagios:latest
+------------
+docker ps
+docker stop nagiosdemo
+docker rm nagiosdemo (idorname)
+docker rmi jasonrivers/nagios:latest
+AWS:
+
+sudo apt update
+sudo apt-get install docker.io
+sudo apt install git
+sudo apt install nano
+git clone ‘url’
+ls
+cd name(ls/name)
+ls
+nano Dockerfile
+{FROM ngnix:alpine
+	COPY . /usr/share/nginx/html }
+sudo docker build -t mywebapp .
+sudo docker run -d -p 80:80 mywebapp
+
+
+
+
+
+docker –version
+docker images
+docker pull hello-world
+docker images
+docker run hello-world
+docker ps -a
+docker rm b3b324b9ac6e
+docker ps -a
+docker rm b3b324b9ac6e
+docker ps -a
+docker rmi hello-world
+------
+docker pull redis
+docker ps -a
+docker run --name newwredis -d redis
+docker ps
+docker exec -it newwredis redis-cli
+- SET name "ABCDEFG"
+-get name
+docker stop 9127dae2d52f
+
+
+--------------------------
+Dockerfile:
+cd path
+ls
+docker build -t myrediss .
+docker images
+docker run --name newmyredis -d myrediss
+docker ps
+docker stop 351706f81b78
+docker commit 351706f81b78 username090/redisnewimage
+docker images
+
+
+ docker login
+docker push  username090/redisnewimage
+
