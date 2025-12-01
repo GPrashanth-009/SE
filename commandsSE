@@ -2,7 +2,6 @@ minikube start
 kubectl create deployment mynginx --image=nginx
 kubectl get deployment
 kubectl expose deployment mynginx --type=NodePort --port=80 --target-port=80
-kubectl create deployment mynginx --image=nginx
 kubectl get deployment
 kubectl get pods
 kubectl port-forward svc/mynginx 8081:80
@@ -19,8 +18,9 @@ docker ps
 docker stop nagiosdemo
 docker rm nagiosdemo (idorname)
 docker rmi jasonrivers/nagios:latest
-AWS:
 
+
+AWS:
 sudo apt update
 sudo apt-get install docker.io
 sudo apt install git
@@ -80,4 +80,157 @@ docker images
 
  docker login
 docker push  username090/redisnewimage
+
+
+---------------------------------------
+MInikube mysql::
+
+
+PS C:\Windows\system32> minikube start
+kubectl get nodes
+NAME       STATUS   ROLES           AGE   VERSION
+minikube   Ready    control-plane   18m   v1.34.0
+PS C:\Windows\system32> kubectl create secret generic mysql-secret --from-literal=mysql-root-password=RootPass123!
+secret/mysql-secret created
+PS C:\Windows\system32> kubectl apply -f "C:\Users\givil\Desktop\SEdockercompose\kubernets\mysql.yaml"
+statefulset.apps/mysql created
+
+PS C:\Windows\system32> kubectl get pods
+NAME                       READY   STATUS    RESTARTS        AGE
+mynginx-645865c456-frhk4   1/1     Running   1 (4m39s ago)   21m
+mysql-0                    1/1     Running   0               61s
+PS C:\Windows\system32> kubectl scale deployment mysql --replicas=3
+error: no objects passed to scale deployments.apps "mysql" not found
+PS C:\Windows\system32> kubectl scale statefulset mysql --replicas=3
+>>
+statefulset.apps/mysql scaled
+PS C:\Windows\system32> kubectl scale statefulset mysql --replicas=3
+statefulset.apps/mysql scaled
+PS C:\Windows\system32> kubectl get pods
+NAME                       READY   STATUS    RESTARTS        AGE
+mynginx-645865c456-frhk4   1/1     Running   1 (7m10s ago)   24m
+mysql-0                    1/1     Running   0               3m32s
+mysql-1                    1/1     Running   0               32s
+mysql-2                    1/1     Running   0               31s
+PS C:\Windows\system32> kubectl get statefulset
+NAME    READY   AGE
+mysql   3/3     3m52s
+PS C:\Windows\system32>
+
+
+mysql.yaml::
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+spec:
+  replicas: 1  # Initial number of replicas
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "password"
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-data
+        emptyDir: {}
+
+----------------------------------
+
+Docker compose:
+
+Step 1: Project Structure
+•	Create a new directory for your project.
+•	Inside this directory, create:
+•	app.js (or your Node.js app file)
+•	package.json (Node.js dependencies)
+•	Dockerfile (for Node.js app)
+•	docker-compose.yml (to orchestrate services)
+app.js::
+const express = require('express');
+const mongoose = require('mongoose');
+const app = express();
+mongoose.connect('mongodb://mongo:27017/mydb', { useNewUrlParser: true, useUnifiedTopology: true });
+app.get('/', (req, res) => {
+  res.send('Hello from Node.js with MongoDB!');
+});
+app.get('/test', async (req, res) => {
+  const db = mongoose.connection;
+  await db.collection('test').insertOne({ message: 'test' });
+  const result = await db.collection('test').findOne({ message: 'test' });
+  res.json(result);
+});
+app.listen(3000, () => {
+  console.log('App listening on port 3000');
+});
+
+package.json::
+{
+  "name": "node-mongo-app",
+  "version": "1.0.0",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.0.0"
+  },
+  "scripts": {
+    "start": "node app.js"
+  }
+}
+
+Dockerfile::
+FROM node:18
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD ["npm", "start"]
+
+docker-compose.yml::
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    environment:
+      - NODE_ENV=development
+  mongo:
+    image: mongo:6.0
+   ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+volumes:
+  mongodb_data:
+
+command::
+docker-compose up –build ((or) docker-compose build, docker-compose up, docker-compose up --force-recreate)
+docker-compose down
+
+docker ps   (in  powershell)
+To access mongodb shell:::::: 
+docker exec -it sedockercompose-mongo-1 mongosh
+show dbs
+
+Open your browser and go to:::  http://localhost:3000
+
+
+
 
