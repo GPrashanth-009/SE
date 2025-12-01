@@ -82,6 +82,10 @@ docker images
  docker login
 docker push  username090/redisnewimage
 
+docker rm id
+docker rmi username
+docker pull 
+docker logout
 
 ---------------------------------------
 MInikube mysql::
