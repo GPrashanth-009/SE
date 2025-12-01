@@ -63,6 +63,10 @@ docker stop 9127dae2d52f
 
 --------------------------
 Dockerfile:
+
+FROM redis:latest 
+CMD ["redis-server"]
+
 cd path
 ls
 docker build -t myrediss .
